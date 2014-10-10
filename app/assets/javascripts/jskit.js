@@ -40,11 +40,12 @@ function Application() {
   @param attributes {Object} Attributes to assign to the new Controller
   @return {Controller} new Controller instance
 */
-function createControllerInstance(attributes) {
+function createControllerInstance(attributes, name) {
   function Controller() { BaseController.call(this); }
   Controller.prototype = Object.create(BaseController.prototype);
   Controller.prototype.constructor = Controller;
   _.extend(Controller.prototype, attributes);
+  this[name + "Controller"] = Controller;
   return new Controller;
 }
 
@@ -64,9 +65,13 @@ function registerControllerActions(controller, actions, name, namespace) {
       throw new Error("'" + name + "' Controller has an action '" + action + "' defined with no corresponding method");
     }
 
-    var eventName = _([namespace, "controller", name.toLowerCase(), action]).compact().join(":");
+    var eventName = _([namespace, "controller", underscoreName(name), action]).compact().join(":");
     this.Dispatcher.on(eventName, controller[action], controller);
   }, this);
+}
+
+function underscoreName(name) {
+  return name.replace(/([A-Z])/g, " $1").replace(/^\s?/, '').replace(/-|\s/g, "_").toLowerCase();
 }
 
 /**
@@ -94,7 +99,7 @@ function registerApplicationControllerActions(controller, namespace) {
   @return {Controller}
 */
 def(Application, 'createController', function(name, attributes) {
-  var controller = createControllerInstance(attributes);
+  var controller = createControllerInstance.call(this, attributes, name);
   _.bindAll.apply(controller, [controller].concat(_.functions(controller)));
   registerControllerActions.call(this, controller, attributes.actions, name, attributes.namespace);
   if (name.match(/^Application$/i)) registerApplicationControllerActions.call(this, controller, attributes.namespace);
@@ -160,7 +165,7 @@ global.JSKit = {
   }
 };
 
-}).call(this,require("1YiZ5S"),typeof self !== "undefined" ? self : typeof window !== "undefined" ? window : {},require("buffer").Buffer,arguments[3],arguments[4],arguments[5],arguments[6],"/fake_73f3058a.js","/")
+}).call(this,require("1YiZ5S"),typeof self !== "undefined" ? self : typeof window !== "undefined" ? window : {},require("buffer").Buffer,arguments[3],arguments[4],arguments[5],arguments[6],"/fake_adfdad7f.js","/")
 },{"./application":1,"1YiZ5S":10,"buffer":7}],4:[function(require,module,exports){
 (function (process,global,Buffer,__argument0,__argument1,__argument2,__argument3,__filename,__dirname){
 // ES5 15.2.3.5 Object.create ( O [, Properties] )
@@ -283,18 +288,7 @@ module.exports = function(constructor, propertyName, value, writeable, configura
   // by Backbone.Events
   function miniscore() {
     return {
-      keys: Object.keys || function (obj) {
-        if (typeof obj !== "object" && typeof obj !== "function" || obj === null) {
-          throw new TypeError("keys() called on a non-object");
-        }
-        var key, keys = [];
-        for (key in obj) {
-          if (obj.hasOwnProperty(key)) {
-            keys[keys.length] = key;
-          }
-        }
-        return keys;
-      },
+      keys: Object.keys,
 
       uniqueId: function(prefix) {
         var id = ++idCounter + '';
