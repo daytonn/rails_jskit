@@ -1,7 +1,7 @@
 PATH
   remote: .
   specs:
-    jskit_rails (0.0.1)
+    jskit_rails (1.1.1)
       rails (~> 4.1)
 
 GEM
@@ -54,6 +54,9 @@ GEM
       coderay (~> 1.1.0)
       method_source (~> 0.8.1)
       slop (~> 3.4)
+    pry-doc (0.6.0)
+      pry (~> 0.9)
+      yard (~> 0.8)
     pry-nav (0.2.4)
       pry (>= 0.9.10, < 0.11.0)
     rack (1.5.2)
@@ -112,6 +115,7 @@ GEM
     tilt (1.4.1)
     tzinfo (1.2.2)
       thread_safe (~> 0.1)
+    yard (0.8.7.4)
 
 PLATFORMS
   ruby
@@ -120,6 +124,7 @@ DEPENDENCIES
   fuubar (~> 2.0)
   jskit_rails!
   pry (~> 0.10)
+  pry-doc
   pry-nav (~> 0.2)
   rspec-rails (~> 3.1)
   sqlite3 (~> 1.3)
