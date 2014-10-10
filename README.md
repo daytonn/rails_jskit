@@ -41,7 +41,7 @@ If you wish to pass data to the event handler, simply set the payload from the c
 ```rb
 class PagesController < ApplicationController
   def index
-    JSKit.set_payload("foo", [1, 2, 3], { some: "object" })
+    set_jskit_payload("foo", [1, 2, 3], { some: "object" })
   end
 end
 ```
@@ -52,4 +52,4 @@ Everything passed to `set_payload` will be converted to json for you (via `to_js
 App.Dispatcher.trigger("controller:pages:index", "foo", [1, 2, 3], { "some": "object" });
 ```
 
-Here is an example application using `jskit_rails`: [jskit_rails-example](https://github.com/daytonn/jskit_rails-example)
+Here is an example application using `jskit_rails`: [jskit-rails-example](https://github.com/daytonn/jskit-rails-example)
