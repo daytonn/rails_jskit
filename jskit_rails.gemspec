@@ -22,7 +22,7 @@ Gem::Specification.new do |s|
   s.add_development_dependency "sqlite3", "~> 1.3"
   s.add_development_dependency "pry", "~> 0.10"
   s.add_development_dependency "pry-nav", "~> 0.2"
-  s.add_development_dependency "pry-doc"
+  s.add_development_dependency "pry-doc", "~> 0.6"
   s.add_development_dependency "rspec-rails", "~> 3.1"
   s.add_development_dependency "fuubar", "~> 2.0"
 end
