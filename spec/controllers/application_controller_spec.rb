@@ -28,19 +28,6 @@ describe ApplicationController, type: :controller do
     end
   end
 
-  describe "#event_name" do
-    it "returns the event name" do
-      expect(ApplicationController::JSKit.send(:event_name, "test_controller", "test_action")).to eq("controller:test_controller:test_action")
-    end
-
-    context "with namespace" do
-      it "returns the controller event name prefixed with the namespace" do
-        allow(ApplicationController::JSKit).to receive(:event_namespace) { "test" }
-        expect(ApplicationController::JSKit.send(:event_name, "test_controller", "test_action")).to eq("test:controller:test_controller:test_action")
-      end
-    end
-  end
-
   describe "#jskit" do
     it "returns a script tag with the global event and the controller event" do
       subject = ApplicationController.new
@@ -49,6 +36,7 @@ describe ApplicationController, type: :controller do
       application_event = ApplicationController::JSKit.send(:application_event)
       controller_event = ApplicationController::JSKit.send(:controller_event)
       action_event = ApplicationController::JSKit.send(:action_event)
+
       expect(subject.jskit).to eq(subject.view_context.javascript_tag([application_event, controller_event, action_event].join("\n")))
     end
   end

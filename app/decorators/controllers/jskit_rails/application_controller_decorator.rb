@@ -23,7 +23,7 @@ ApplicationController.class_eval do
       [
         JskitRails.configuration.app_namespace,
         "Dispatcher",
-        event_trigger(event_name(controller_name, action_name), JSKit.action_payload)
+        %Q(trigger("#{[event_namespace, "controller", controller_name, action_name].compact.join(":")}"#{JSKit.action_payload});)
       ].join(".")
     end
 
@@ -31,7 +31,7 @@ ApplicationController.class_eval do
       [
         JskitRails.configuration.app_namespace,
         "Dispatcher",
-        event_trigger(event_name(controller_name, "all"), JSKit.controller_payload)
+        %Q(trigger("#{[event_namespace, "controller", controller_name, "all"].compact.join(":")}"#{JSKit.controller_payload});)
       ].join(".")
     end
 
@@ -40,16 +40,8 @@ ApplicationController.class_eval do
       [
         JskitRails.configuration.app_namespace,
         "Dispatcher",
-        event_trigger(event_name("application", "all"), JSKit.app_payload)
+        %Q(trigger("#{[event_namespace, "controller", "application", "all"].compact.join(":")}"#{JSKit.app_payload});)
       ].join(".")
-    end
-
-    def event_name(controller, action)
-      [event_namespace, "controller", controller, action].compact.join(":")
-    end
-
-    def event_trigger(event, payload)
-      %Q(trigger("#{event}"#{JSKit.controller_payload});)
     end
 
     def payload_js(payload)
@@ -63,8 +55,6 @@ ApplicationController.class_eval do
       :payload_js,
       :application_event,
       :action_event,
-      :event_name,
-      :event_trigger,
       :controller_event)
   end
 
