@@ -1,37 +1,55 @@
 require "rails_helper"
 
 describe ApplicationController, type: :controller do
-  describe "#set_jskit_payload" do
-    it "sets the payload to an array of the arguments passed" do
-      subject.set_jskit_payload("foo")
-      expect(subject.send(:jskit_payload)).to eq(', "foo"')
-      subject.set_jskit_payload("foo", "bar", "baz")
-      expect(subject.send(:jskit_payload)).to eq(', "foo", "bar", "baz"')
+  describe "#action_payload" do
+    it "sets the action_payload to an array of the arguments passed" do
+      ApplicationController::JSKit.action_payload = "foo"
+      expect(ApplicationController::JSKit.action_payload).to eq(', "foo"')
+      ApplicationController::JSKit.action_payload = ["foo", "bar", "baz"]
+      expect(ApplicationController::JSKit.action_payload).to eq(', "foo", "bar", "baz"')
     end
   end
 
-  describe "#jskit_event_name" do
-    before do
-      allow(subject).to receive(:controller_name) { "test_controller" }
-      allow(subject).to receive(:action_name) { "test_action" }
+  describe "#controller_payload" do
+    it "sets the controller_payload to an array of the arguments passed" do
+      ApplicationController::JSKit.controller_payload = "foo"
+      expect(ApplicationController::JSKit.controller_payload).to eq(', "foo"')
+      ApplicationController::JSKit.controller_payload = ["foo", "bar", "baz"]
+      expect(ApplicationController::JSKit.controller_payload).to eq(', "foo", "bar", "baz"')
     end
+  end
 
+  describe "#app_payload" do
+    it "sets the app_payload to an array of the arguments passed" do
+      ApplicationController::JSKit.app_payload = "foo"
+      expect(ApplicationController::JSKit.app_payload).to eq(', "foo"')
+      ApplicationController::JSKit.app_payload = ["foo", "bar", "baz"]
+      expect(ApplicationController::JSKit.app_payload).to eq(', "foo", "bar", "baz"')
+    end
+  end
+
+  describe "#event_name" do
     it "returns the event name" do
-      expect(subject.send(:jskit_event_name, namespace: nil)).to eq("controller:test_controller:test_action")
+      expect(ApplicationController::JSKit.send(:event_name, "test_controller", "test_action")).to eq("controller:test_controller:test_action")
     end
 
     context "with namespace" do
       it "returns the controller event name prefixed with the namespace" do
-        expect(subject.send(:jskit_event_name, namespace: "test")).to eq("test:controller:test_controller:test_action")
+        allow(ApplicationController::JSKit).to receive(:event_namespace) { "test" }
+        expect(ApplicationController::JSKit.send(:event_name, "test_controller", "test_action")).to eq("test:controller:test_controller:test_action")
       end
     end
   end
 
   describe "#jskit" do
     it "returns a script tag with the global event and the controller event" do
-      global_event = subject.send(:jskit_global_event)
-      controller_event = subject.send(:jskit_controller_event)
-      expect(subject.jskit).to eq(subject.view_context.javascript_tag([global_event, controller_event].join("\n")))
+      subject = ApplicationController.new
+      allow(ApplicationController::JSKit).to receive(:controller_name) { "test_controller" }
+      allow(ApplicationController::JSKit).to receive(:action_name) { "test_action" }
+      application_event = ApplicationController::JSKit.send(:application_event)
+      controller_event = ApplicationController::JSKit.send(:controller_event)
+      action_event = ApplicationController::JSKit.send(:action_event)
+      expect(subject.jskit).to eq(subject.view_context.javascript_tag([application_event, controller_event, action_event].join("\n")))
     end
   end
 end
