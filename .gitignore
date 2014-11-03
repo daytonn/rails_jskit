@@ -10,4 +10,4 @@ bin
 **/*.DS_Store
 jskit_rails-1.2.0.gem
 node_modules/
-jskit_rails-2.0.0.gem
+*.gem
