@@ -192,3 +192,8 @@ end
 ```
 
 This should be everything you need to design and test basic client-side interactions with JSKit. If you'd like to see a working example check out [this repo](https://github.com/daytonn/jskit_rails-example).
+
+Traceur Compiler
+----------------
+
+The [jskit](https://github.com/daytonn/jskit) library is written with JavaScript [ES6 features](https://github.com/google/traceur-compiler/wiki/LanguageFeatures) using the [Traceur compiler](https://github.com/google/traceur-compiler). The [traceur runtime](https://github.com/google/traceur-compiler/wiki/Building-custom-Traceur-runtimes) is included in jskit to provide these features. 
