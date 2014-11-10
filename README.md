@@ -97,7 +97,8 @@ Sometimes you may want to map and action to a method with a different name, or y
 App.createController("Posts", {
   actions: [
     "index",
-    { new: "setupForm" },     { edit: "setupForm" },
+    { new: "setupForm" },
+    { edit: "setupForm" },
     { create: "setupForm" }
   ],
   
