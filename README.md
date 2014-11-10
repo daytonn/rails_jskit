@@ -197,3 +197,5 @@ Traceur Compiler
 ----------------
 
 The [jskit](https://github.com/daytonn/jskit) library is written with JavaScript [ES6 features](https://github.com/google/traceur-compiler/wiki/LanguageFeatures) using the [Traceur compiler](https://github.com/google/traceur-compiler). The [traceur runtime](https://github.com/google/traceur-compiler/wiki/Building-custom-Traceur-runtimes) is included in jskit to provide these features. 
+
+_Note: While the traceur-runtime is included with jskit, if you wish to write your own code with ES6 features, you will need a separate traceur-compiler for use with the asset pipeline. Something like: [sprockets-traceur](https://github.com/gunpowderlabs/sprockets-traceur) or [traceur-rails](https://github.com/aackerman/traceur-rails). You would not need to include the `traceur-runtime` from these tools since it is included in the jskit library itself. All of your es6 scripts would need to be loaded after jskit to take advantage of it's included runtime._
