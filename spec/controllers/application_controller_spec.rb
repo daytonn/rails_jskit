@@ -1,6 +1,9 @@
 require "rails_helper"
 
-describe ApplicationController, type: :controller do
+class OrdersController < ApplicationController
+end
+
+describe OrdersController, type: :controller do
   shared_examples "a payload setter" do |payload_type|
     describe "#set_#{payload_type}_payload" do
       it "sets the #{payload_type}_payload to an array of the passed arguments" do
@@ -17,14 +20,13 @@ describe ApplicationController, type: :controller do
   it_behaves_like "a payload setter", :app
 
   describe "#jskit" do
-    class OrdersController < ApplicationController
+    let(:view_context) { controller.view_context }
+
+    before do
+      controller.action_name = "action"
     end
 
     it "returns a script tag with the global event and the controller event" do
-      controller = OrdersController.new
-      controller.action_name = "action"
-      view_context = controller.view_context
-
       app_event = "App.Dispatcher.trigger(\"controller:application:all\", \"baz\");"
       controller_event = "App.Dispatcher.trigger(\"controller:orders:all\", \"bar\");"
       action_event = "App.Dispatcher.trigger(\"controller:orders:action\", \"foo\");"
@@ -42,10 +44,6 @@ describe ApplicationController, type: :controller do
     end
 
     it "namespaces events based on the config" do
-      controller = OrdersController.new
-      controller.action_name = "action"
-      view_context = controller.view_context
-
       app_event = "App.Dispatcher.trigger(\"some_namespace:controller:application:all\");"
       controller_event = "App.Dispatcher.trigger(\"some_namespace:controller:orders:all\");"
       action_event = "App.Dispatcher.trigger(\"some_namespace:controller:orders:action\");"
