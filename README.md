@@ -144,7 +144,7 @@ class ApplicationController < ApplicationController
   private 
   
   def set_jskit_payload
-    JSKit.app_payload = current_user
+    set_app_payload(current_user)
   end
 end
 ```
@@ -160,7 +160,7 @@ class ApplicationController < ApplicationController
   private 
   
   def set_jskit_payload
-    JSKit.app_payload = [current_user, [1, 2, 3], { some: "hash" }]
+    set_app_payload(current_user, [1, 2, 3], { some: "hash" })
   end
 end
 ```
@@ -177,16 +177,16 @@ This allows you to share data from your Rails app without explicit knowldge of h
 
 ```rb
 class PostsController < ApplicationController
-  before_action :set_controller_payload
+  before_action :set_jskit_payload
   
   def index
-    JSKit.action_payload = "PostsController#index"
+    set_action_payload("PostsController#index")
   end
   
   private
   
-  def set_controller_payload
-    JSKit.controller_payload = "PostsController"
+  def set_jskit_payload
+    set_controller_payload("PostsController")
   end
 end
 ```
