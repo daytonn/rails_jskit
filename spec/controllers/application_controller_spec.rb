@@ -1,43 +1,59 @@
 require "rails_helper"
 
-describe ApplicationController, type: :controller do
-  describe "#action_payload" do
-    it "sets the action_payload to an array of the arguments passed" do
-      ApplicationController::JSKit.action_payload = "foo"
-      expect(ApplicationController::JSKit.action_payload).to eq(', "foo"')
-      ApplicationController::JSKit.action_payload = ["foo", "bar", "baz"]
-      expect(ApplicationController::JSKit.action_payload).to eq(', "foo", "bar", "baz"')
+class OrdersController < ApplicationController
+end
+
+describe OrdersController, type: :controller do
+  shared_examples "a payload setter" do |payload_type|
+    describe "#set_#{payload_type}_payload" do
+      it "sets the #{payload_type}_payload to an array of the passed arguments" do
+        controller.send("set_#{payload_type}_payload", "foo")
+        expect(assigns("#{payload_type}_payload")).to eq(', "foo"')
+
+        controller.send("set_#{payload_type}_payload", "foo", "bar", "baz")
+        expect(assigns("#{payload_type}_payload")).to eq(', "foo", "bar", "baz"')
+
+        controller.send("set_#{payload_type}_payload", ["foo", "bar", "baz"])
+        expect(assigns("#{payload_type}_payload")).to eq(', ["foo","bar","baz"]')
+      end
     end
   end
 
-  describe "#controller_payload" do
-    it "sets the controller_payload to an array of the arguments passed" do
-      ApplicationController::JSKit.controller_payload = "foo"
-      expect(ApplicationController::JSKit.controller_payload).to eq(', "foo"')
-      ApplicationController::JSKit.controller_payload = ["foo", "bar", "baz"]
-      expect(ApplicationController::JSKit.controller_payload).to eq(', "foo", "bar", "baz"')
-    end
-  end
-
-  describe "#app_payload" do
-    it "sets the app_payload to an array of the arguments passed" do
-      ApplicationController::JSKit.app_payload = "foo"
-      expect(ApplicationController::JSKit.app_payload).to eq(', "foo"')
-      ApplicationController::JSKit.app_payload = ["foo", "bar", "baz"]
-      expect(ApplicationController::JSKit.app_payload).to eq(', "foo", "bar", "baz"')
-    end
-  end
+  it_behaves_like "a payload setter", :action
+  it_behaves_like "a payload setter", :controller
+  it_behaves_like "a payload setter", :app
 
   describe "#jskit" do
-    it "returns a script tag with the global event and the controller event" do
-      subject = ApplicationController.new
-      allow(ApplicationController::JSKit).to receive(:controller_name) { "test_controller" }
-      allow(ApplicationController::JSKit).to receive(:action_name) { "test_action" }
-      application_event = ApplicationController::JSKit.send(:application_event)
-      controller_event = ApplicationController::JSKit.send(:controller_event)
-      action_event = ApplicationController::JSKit.send(:action_event)
+    let(:view_context) { controller.view_context }
 
-      expect(subject.jskit).to eq(subject.view_context.javascript_tag([application_event, controller_event, action_event].join("\n")))
+    before do
+      controller.action_name = "action"
+    end
+
+    it "returns a script tag with the global event and the controller event" do
+      app_event = "App.Dispatcher.trigger(\"controller:application:all\", \"baz\");"
+      controller_event = "App.Dispatcher.trigger(\"controller:orders:all\", \"bar\");"
+      action_event = "App.Dispatcher.trigger(\"controller:orders:action\", \"foo\");"
+      expected_js = view_context.javascript_tag([app_event, controller_event, action_event].join("\n"))
+
+      controller.set_action_payload("foo")
+      controller.set_controller_payload("bar")
+      controller.set_app_payload("baz")
+
+      expect(controller.jskit).to eq(expected_js)
+    end
+
+    it "is exposed as a helper method" do
+      expect(controller.view_context.jskit).to eq(controller.jskit)
+    end
+
+    it "namespaces events based on the config" do
+      app_event = "App.Dispatcher.trigger(\"some_namespace:controller:application:all\");"
+      controller_event = "App.Dispatcher.trigger(\"some_namespace:controller:orders:all\");"
+      action_event = "App.Dispatcher.trigger(\"some_namespace:controller:orders:action\");"
+      expected_js = view_context.javascript_tag([app_event, controller_event, action_event].join("\n"))
+
+      expect(controller.jskit(namespace: "some_namespace")).to eq(expected_js)
     end
   end
 end
