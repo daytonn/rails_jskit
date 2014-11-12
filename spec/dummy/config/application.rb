@@ -1,4 +1,4 @@
-require File.expand_path('../boot', __FILE__)
+require File.expand_path("../boot", __FILE__)
 
 # Pick the frameworks you want:
 # require "active_record/railtie"
@@ -26,4 +26,3 @@ module Dummy
     # config.i18n.default_locale = :de
   end
 end
-

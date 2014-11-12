@@ -14,6 +14,21 @@
 # users commonly want.
 #
 # See http://rubydoc.info/gems/rspec-core/RSpec/Core/Configuration
+
+RSpec::Matchers.define :alias_the_method do |method_name|
+  match do |actual|
+    if actual.respond_to?(method_name) && actual.respond_to?(@other_method_name)
+      aliased_method = actual.method(@other_method_name)
+      original_method = actual.method(method_name)
+      aliased_method.original_name == original_method.name
+    end
+  end
+
+  chain :to do |other_method_name|
+    @other_method_name = other_method_name
+  end
+end
+
 RSpec.configure do |config|
   # rspec-expectations config goes here. You can use an alternate
   # assertion/expectation library such as wrong or the stdlib/minitest
