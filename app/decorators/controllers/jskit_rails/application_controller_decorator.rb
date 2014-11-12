@@ -2,7 +2,12 @@ ApplicationController.class_eval do
   helper_method :jskit
 
   def jskit(config = { namespace: nil })
-    events = [application_event(config), controller_event(config), action_event(config)].join("\n")
+    events = [
+      application_event(config),
+      controller_event(config),
+      action_event(config)
+    ].join("\n")
+
     view_context.javascript_tag(events)
   end
 

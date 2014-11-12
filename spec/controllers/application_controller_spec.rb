@@ -9,8 +9,12 @@ describe OrdersController, type: :controller do
       it "sets the #{payload_type}_payload to an array of the passed arguments" do
         controller.send("set_#{payload_type}_payload", "foo")
         expect(assigns("#{payload_type}_payload")).to eq(', "foo"')
+
         controller.send("set_#{payload_type}_payload", "foo", "bar", "baz")
         expect(assigns("#{payload_type}_payload")).to eq(', "foo", "bar", "baz"')
+
+        controller.send("set_#{payload_type}_payload", ["foo", "bar", "baz"])
+        expect(assigns("#{payload_type}_payload")).to eq(', ["foo","bar","baz"]')
       end
     end
   end
