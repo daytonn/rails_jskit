@@ -8,27 +8,62 @@ end
 
 Bundler::GemHelper.install_tasks
 
+def jskit_package_json_file
+  File.join(Rake.original_dir, "node_modules", "jskit", "package.json")
+end
+
+def jskit_package_json
+  JSON.parse File.read(jskit_package_json_file)
+end
+
+def package_json_file
+  File.join(Rake.original_dir, "package.json")
+end
+
+def package_json
+  JSON.parse(File.read(package_json_file))
+end
+
 namespace :version do
+  def update_package_json(version)
+    new_package_json = package_json.merge("version" => version)
+    File.write(package_json_file, JSON.pretty_generate(new_package_json))
+  end
+
+  def update_version_file(version)
+    File.write(File.join(Rake.original_dir, "VERSION"), version)
+  end
+
   task :write do
-    File.write(File.join(Rake.original_dir, "VERSION"), [ENV["MAJOR"], ENV["MINOR"], ENV["PATCH"]].join("."))
+    version = [ENV["MAJOR"] || 0, ENV["MINOR"] || 0, ENV["PATCH"] || 0].join(".")
+    update_version_file(version)
+    update_package_json(version)
+    puts %Q(Version is set to: #{version})
   end
 
   namespace :bump do
+
     major, minor, patch = JskitRails::VERSION.split(".").map(&:to_i)
 
     task :major do
-      major += 1
-      File.write(File.join(Rake.original_dir, "VERSION"), [major, minor, patch].join("."))
+      version = [major + 1, 0, 0].join(".")
+      update_version_file(version)
+      update_package_json(version)
+      puts %Q(Updated to version: #{version})
     end
 
     task :minor do
-      minor += 1
-      File.write(File.join(Rake.original_dir, "VERSION"), [major, minor, patch].join("."))
+      version = [major, minor + 1, 0].join(".")
+      update_version_file(version)
+      update_package_json(version)
+      puts %Q(Updated to version: #{version})
     end
 
     task :patch do
-      patch += 1
-      File.write(File.join(Rake.original_dir, "VERSION"), [major, minor, patch].join("."))
+      version = [major, minor, patch + 1].join(".")
+      update_version_file(version)
+      update_package_json(version)
+      puts %Q(Updated to version: #{version})
     end
   end
 end
@@ -50,21 +85,17 @@ namespace :jskit do
     puts "JSKit files removed."
 
     puts "Installing JSKit from npm.."
-    puts %x{npm install}
-
-    package_file = File.join(Rake.original_dir, "node_modules", "jskit", "package.json")
-    package_json = JSON.parse(File.read(package_file))
-    puts "JSKit #{package_json['version']} installed from npm."
+    puts %x{npm update jskit}
+    puts "JSKit #{jskit_package_json['version']} installed from npm."
 
     puts "Copying JSKit to #{js_dir}..."
-    jskit_files.each do |file|
-      full_npm_path = File.join(npm_jskit_dir, file)
-      full_js_path = File.join(js_dir, file)
-
-      if File.exists? full_npm_path
-        FileUtils.cp(full_npm_path, full_js_path)
-        puts "Copied #{file}." if File.exists? full_js_path
-      end
+    Dir["#{npm_jskit_dir}/*"].each do |file|
+      FileUtils.cp_r(file, js_dir)
+    end
+    FileUtils.rm_rf("#{js_dir}/jskit")
+    FileUtils.mv("#{js_dir}/es6", "#{js_dir}/jskit")
+    Dir["#{js_dir}/jskit/**/*.js"].each do |file|
+      FileUtils.mv(file, "#{file}.es6")
     end
   end
 end
