@@ -34,6 +34,7 @@ namespace :version do
     File.write(File.join(Rake.original_dir, "VERSION"), version)
   end
 
+  desc "Write complete version string to file"
   task :write do
     version = [ENV["MAJOR"] || 0, ENV["MINOR"] || 0, ENV["PATCH"] || 0].join(".")
     update_version_file(version)
@@ -45,6 +46,7 @@ namespace :version do
 
     major, minor, patch = JskitRails::VERSION.split(".").map(&:to_i)
 
+    desc "Bump major version"
     task :major do
       version = [major + 1, 0, 0].join(".")
       update_version_file(version)
@@ -52,6 +54,7 @@ namespace :version do
       puts %Q(Updated to version: #{version})
     end
 
+    desc "Bump minor version"
     task :minor do
       version = [major, minor + 1, 0].join(".")
       update_version_file(version)
@@ -59,6 +62,7 @@ namespace :version do
       puts %Q(Updated to version: #{version})
     end
 
+    desc "Bump patch level"
     task :patch do
       version = [major, minor, patch + 1].join(".")
       update_version_file(version)
