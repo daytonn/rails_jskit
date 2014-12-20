@@ -5,7 +5,7 @@
   "description": "Gem that provides Rails integration for jskit",
   "main": "index.js",
   "dependencies": {
-    "jskit": "^2.3.0"
+    "jskit": "^2.5.0"
   },
   "devDependencies": {
   },
