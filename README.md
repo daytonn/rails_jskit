@@ -32,6 +32,11 @@ Add the jskit javascript (i.e. `app/assets/javascripts/application.js`):
 ```js
 //= require jskit_rails
 ```
+*Note: if you need to support IE8 and lower you need to use the JSKit legacy build:*
+
+```js
+//= require jskit_rails_legacy
+```
 
 That's it, now all controller actions will be triggered on the `JSKit` dispatcher.
 
@@ -195,7 +200,30 @@ This should be everything you need to design and test basic client-side interact
 
 JSKit Builds
 ------------
+The default JSKit bundle comes with the traceur runtime included. There are a few other jskit builds if you do not wish to use the traceur compiler, or you wish to include the traceur compiler separately.
 
+### Standalone Build
+The JSKit standalone build is used if you're already using the traceur compiler and do not wish it to be included with the JSKit bundle:
+
+```js
+//= require jskit_rails_standalone
+```
+
+### Legacy Build
+Internet Exporer version 8 and lower do not support the traceur compiler. To use JSKit with these browsers, you will need to use the legacy build:
+
+```js
+//= require jskit_rails_legacy
+```
+
+### Minified Builds
+If you want to include the pre-minified JSKit builds, simply append `_min`:
+
+```js
+//= require jskit_rails_min
+//= require jskit_rails_standalone_min
+//= require jskit_rails_legacy_min
+```
 
 Traceur Compiler
 ----------------
