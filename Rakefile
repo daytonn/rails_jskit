@@ -100,6 +100,7 @@ namespace :jskit do
     end
     FileUtils.rm_rf("#{js_dir}/jskit")
     FileUtils.mv("#{js_dir}/es6", "#{js_dir}/jskit")
+    FileUtils.mv("#{js_dir}/jskit/application.js", "#{js_dir}/jskit/app.js")
     Dir["#{js_dir}/jskit/**/*.js"].each do |file|
       FileUtils.mv(file, "#{file}.es6")
     end
