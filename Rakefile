@@ -95,14 +95,8 @@ namespace :jskit do
     puts "JSKit #{jskit_package_json['version']} installed from npm."
 
     puts "Copying JSKit to #{js_dir}..."
-    Dir["#{npm_jskit_dir}/*"].each do |file|
+    Dir["#{npm_jskit_dir}/*.js"].each do |file|
       FileUtils.cp_r(file, js_dir)
-    end
-    FileUtils.rm_rf("#{js_dir}/jskit")
-    FileUtils.mv("#{js_dir}/es6", "#{js_dir}/jskit")
-    FileUtils.mv("#{js_dir}/jskit/application.js", "#{js_dir}/jskit/app.js")
-    Dir["#{js_dir}/jskit/**/*.js"].each do |file|
-      FileUtils.mv(file, "#{file}.es6")
     end
   end
 end
