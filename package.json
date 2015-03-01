@@ -1,11 +1,11 @@
 {
   "name": "jskit_rails",
   "private": true,
-  "version": "3.4.2",
+  "version": "3.4.3",
   "description": "Gem that provides Rails integration for jskit",
   "main": "index.js",
   "dependencies": {
-    "jskit": "^3.0.0"
+    "jskit": "^3.0.4"
   },
   "devDependencies": {
   },
