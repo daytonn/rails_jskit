@@ -9,14 +9,18 @@ jskit_rails is a gem that let's you seamlessly integrate rails with [JSKit](http
 
 Make sure that lodash or underscore is included and available globally.
 
-```html
-<script type="text/javascript" src="path/to/lodash.js"></script>
+```js
+// application.js
+...
+//= require lodash
 ```
 
 -- or --
 
-```html
-<script type="text/javascript" src="path/to/underscore.js"></script>
+```js
+// application.js
+...
+//= require underscore
 ```
 
 Installation
