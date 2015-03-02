@@ -1,7 +1,7 @@
 jskit_rails
 ===========
 
-jskit_rails is a gem that let's you seamlessly integrate rails with [JSKit](https://github.com/daytonn/jskit).
+jskit_rails is a gem that let's you seamlessly integrate rails with [JSKit](https://github.com/daytonn/jskit). View the example repo [here](https://github.com/daytonn/jskit_rails-example) or see it in action [here](https://jskit-rails-example.herokuapp.com/)
 
 Installation
 ------------
