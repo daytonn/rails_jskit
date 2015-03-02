@@ -3,6 +3,22 @@ jskit_rails
 
 jskit_rails is a gem that let's you seamlessly integrate rails with [JSKit](https://github.com/daytonn/jskit). View the example repo [here](https://github.com/daytonn/jskit_rails-example) or see it in action [here](https://jskit-rails-example.herokuapp.com/)
 
+
+### Requirements
+* [lodash](https://lodash.com/) or [underscore](http://underscorejs.org/)
+
+Make sure that lodash or underscore is included and available globally.
+
+```html
+<script type="text/javascript" src="path/to/lodash.js"></script>
+```
+
+-- or --
+
+```html
+<script type="text/javascript" src="path/to/underscore.js"></script>
+```
+
 Installation
 ------------
 
