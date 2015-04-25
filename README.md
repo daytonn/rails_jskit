@@ -109,7 +109,7 @@ Here you can see that the `actions` array tells JSKit to wire up the `index` met
 
 #### Mapped Events
 
-Sometimes you may want to map and action to a method with a different name, or you may want to map multiple actions to the same method. This is accomplished using mapped actions. Instead of using a string in the actions array, use an object to map the action name to the controller's method:
+Sometimes you may want to map an action to a method with a different name, or you may want to map multiple actions to the same method. This is accomplished using mapped actions. Instead of using a string in the actions array, use an object to map the action name to the controller's method:
 
 ```js
 App.createController("Posts", {
