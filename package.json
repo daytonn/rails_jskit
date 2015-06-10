@@ -5,9 +5,10 @@
   "description": "Gem that provides Rails integration for jskit",
   "main": "index.js",
   "dependencies": {
-    "jskit": "^3.5.0"
+    "jskit": "4.0.0-alpha.0"
   },
   "devDependencies": {
+
   },
   "scripts": {
     "test": "echo \"Error: no test specified\" && exit 1"

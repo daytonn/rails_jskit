@@ -1,157 +1,72 @@
+if (!_) throw new Error("JSKit: lodash or underscore is required");
 var JSKit = {};
 
 JSKit.Dispatcher = (function() {
-  function Dispatcher() {
-    this.__events__ =  {};
-  }
-
-  _.assign(Dispatcher.prototype, {
-    on: function(eventName, handler, context) {
-      var eventHandler = {
-        context: context || null,
-        handler: handler
-      };
-
-      var registeredHandlers = this.__events__[eventName] = this.__events__[eventName] || [];
-
-      if (!_.contains(_.pluck(registeredHandlers, "handler"), handler)) {
-        registeredHandlers.push(eventHandler);
-      }
-    },
-
-    off: function(eventName, handler) {
-      var registeredHandlers = this.__events__[eventName];
-      var retainedHandlers = [];
-
-      if (handler) {
-        this.__events__[eventName] = _.reject(registeredHandlers, function(eventHandler) {
-          return eventHandler.handler !== handler;
-        });
-      } else {
-        this.__events__[eventName] = [];
-      }
-    },
-
-    trigger: function(eventName) {
-      var eventHhandlers = this.__events__[eventName] || [];
-      var args = _.rest(arguments);
-
-      _.each(eventHhandlers, function(eventHandler) {
-        var handler = eventHandler.handler;
-        var context = eventHandler.context;
-        handler.apply(context, args);
-      });
-    }
-  });
-
-  return Dispatcher;
-})();
-
-JSKit.TestDispatcher = (function() {
-  var assign = _.assign;
-  var clone = _.clone;
   var contains = _.contains;
-  var each = _.each;
-  var first = _.first;
-  var functions = _.functions;
-  var isString = _.isString;
-  var keys = _.keys;
-  var map = _.map;
-  var rest = _.rest;
-  var toArray = _.toArray;
-  var values = _.values;
+  var pluck = _.pluck;
 
-  function spyOn(handler) {
-    handler.called = false;
-    handler.callCount = 0;
-    handler.calls = [];
-    return handler;
+  function getEventHandlers(context, eventName) {
+    return context.__events__[eventName] = context.__events__[eventName] || [];
   }
 
-  function mapAction(action) {
-    var name;
-    var method;
-
-    name = isString(action) ? action : first(keys(action));
-    method = isString(action) ? action : first(values(action));
-
-    return { name: name, method: method };
+  function createHandlerObject(context, handler) {
+    context = context || null;
+    return {
+      context: context,
+      handler: handler
+    }
   }
 
-  function actionName(action) {
-    var actionMap = mapAction(action);
-    return isString(action) ? '"' + action + '"' :  '{ ' + actionMap.name + ': "' + actionMap.method + '" }';
+  function registerHandler(registeredHandlers, eventHandler, method) {
+    method = method || "push";
+    if (!contains(pluck(registeredHandlers, "handler"), eventHandler.handler)) {
+      registeredHandlers[method](eventHandler);
+    }
   }
 
-  function TestDispatcher() {
-    this.listeners = [];
-    this.events = {};
-    this.shadowDispatcher = new JSKit.Dispatcher;
-  }
+  return {
+    create: function() {
+      return {
+        __events__: {},
 
-  assign(TestDispatcher.prototype, {
-    on: function(eventName, handler, controller) {
-      if (!contains(this.listeners, controller)) this.spyOnControllerMethods(controller);
-      var spy = spyOn(handler);
+        on: function(eventName, handler, context) {
+          var eventHandler = createHandlerObject(context, handler);
+          var registeredHandlers = getEventHandlers(this, eventName);
+          registerHandler(registeredHandlers, eventHandler);
+        },
 
-      this.events[eventName] = this.events[eventName] || [];
-      this.events[eventName].push(spy);
+        before: function(eventName, handler, context) {
+          var eventHandler = createHandlerObject(context, handler);
+          var registeredHandlers = getEventHandlers(this, eventName);
+          registerHandler(registeredHandlers, eventHandler, "unshift");
+        },
 
-      this.shadowDispatcher.on(eventName, function() {
-        this.trackSpy(spy, arguments);
-      }, this);
-    },
+        off: function(eventName, handler) {
+          var registeredHandlers = this.__events__[eventName];
+          var retainedHandlers = [];
 
-    spyOnControllerMethods: function(controller) {
-      var actionNames = map(controller.actions, function(action) { return actionName(action); });
-      var _this = this;
-      each(functions(controller), function(method) {
-        if (!contains(actionNames, method)) {
-          var unboundMethod = controller[method];
-          controller[method] = function() {
-            _this.trackSpy(controller[method], arguments);
-            return unboundMethod.apply(controller, arguments);
-          };
-          spyOn(controller[method]);
+          if (handler) {
+            this.__events__[eventName] = _.reject(registeredHandlers, function(eventHandler) {
+              return eventHandler.handler !== handler;
+            });
+          } else {
+            this.__events__[eventName] = [];
+          }
+        },
+
+        trigger: function(eventName) {
+          var eventHhandlers = this.__events__[eventName] || [];
+          var args = _.rest(arguments);
+
+          _.each(eventHhandlers, function(eventHandler) {
+            var handler = eventHandler.handler;
+            var context = eventHandler.context;
+            handler.apply(context, args);
+          });
         }
-      }, this);
-      this.listeners.push(controller);
-    },
-
-    trigger: function(eventName, handler, context) {
-      this.shadowDispatcher.trigger(eventName, handler, context);
-    },
-
-    trackSpy: function(spy, args) {
-      spy.callCount += 1;
-      spy.called = true;
-      spy.calls.push({ args: toArray(args) });
-    },
-
-    hasAction: function(controller, action) {
-      var actionExists = false;
-
-      controller.actions.forEach(function(a) {
-        if (actionName(a) === actionName(action)) actionExists = true;
-      });
-
-      if (!actionExists) return false;
-
-      var actionMap = mapAction(action);
-      var handler = controller[actionMap.method];
-
-      var eventName = controller.actionEventName(actionMap.name);
-      var cachedCount = handler.callCount;
-
-      controller.dispatcher.trigger(eventName);
-
-      return handler.callCount > cachedCount;
-    },
-
-    off: function() {}
-  });
-
-  return TestDispatcher;
+      };
+    }
+  }
 })();
 
 JSKit.Controller = (function() {
@@ -159,60 +74,25 @@ JSKit.Controller = (function() {
   var compact = _.compact;
   var defaults = _.defaults;
   var each = _.each;
-  var assign = _.assign;
   var first = _.first;
   var functions = _.functions;
-  var isFunction = _.isFunction;
+  var isFunc = _.isFunction;
   var isObject = _.isObject;
   var keys = _.keys;
   var uniq = _.uniq;
   var values = _.values;
-
-  function Controller(dispatcher, attrs) {
-    if (!dispatcher) throw new Error(this.className + ": dispatcher is undefined");
-    assign(this, attrs, this);
-    this.dispatcher = dispatcher;
-    bindAll.apply(this, [this].concat(functions(this)));
-
-    setControllerDefaults.call(this);
-    this.actions.unshift("all");
-    registerActions.call(this);
-
-    this.initialize();
-  }
-
-  assign(Controller.prototype, {
-    initialize: function() {},
-    all: function() {},
-    actionEventName: function(action) {
-      return compact([this.namespace, this.channel, this.controllerEventName, action]).join(this.eventSeparator);
-    }
-  });
-
-  return Controller;
-
-  // private
-
-  function constantize(string) {
-    string = string || "";
-    if (string.match(/_|-|\s/)) {
-      var s = map(string.split(/_|-|\s/g), function(part, i) {
-        return (i > 0) ? part.charAt(0).toUpperCase() + part.slice(1) : part.toLowerCase();
-      }).join("");
-      string = s;
-    } else {
-      string = string.toString();
-    }
-    return string.charAt(0).toUpperCase() + string.slice(1);
-  }
 
   function underscore(string) {
     string = string || "";
     return string.replace(/([A-Z])/g, " $1").replace(/^\s?/, "").replace(/-|\s/g, "_").toLowerCase();
   }
 
-  function ensureActionIsDefined(actionMap) {
-    if (!isFunction(this[actionMap.method])) throw new Error(this.className + " action \"" + actionMap.name + this.eventSeparator + actionMap.method + "\" method is undefined");
+  function registerActions(controller) {
+    each(controller.actions, function(action) {
+      var actionMap = mapAction(action);
+      ensureActionIsDefined(controller, actionMap);
+      controller.dispatcher.on(actionEventName(controller, actionMap.name), controller[actionMap.method], controller);
+    }, controller);
   }
 
   function mapAction(action) {
@@ -223,53 +103,88 @@ JSKit.Controller = (function() {
     return { name: name, method: method };
   }
 
-  function registerActions(dispatcher) {
-    each(this.actions, function(action) {
-      var actionMap = mapAction(action);
-      ensureActionIsDefined.call(this, actionMap);
-      this.dispatcher.on(this.actionEventName(actionMap.name), this[actionMap.method], this);
-    }, this);
+  function ensureActionIsDefined(controller, actionMap) {
+    if (!isFunc(controller[actionMap.method])) {
+      throw new Error(controller.name + ' action "' + actionMap.name + ":" + actionMap.method + '" method is undefined');
+    }
   }
 
-  function setControllerDefaults() {
-    this.name = this.name || "Anonymous";
-    defaults(this, {
-      eventSeparator: ":",
-      actions: [],
-      channel: "controller",
-      className: constantize(this.name) + "Controller",
-      controllerEventName: underscore(this.name)
-    });
+  function actionEventName(controller, action) {
+    return compact([
+      controller.namespace,
+      controller.channel,
+      controller.controllerEventName,
+      action
+    ]).join(controller.eventSeparator);
   }
+
+  function cacheElements(controller, action) {
+    if (controller.elements[action]) {
+      each(controller.elements[action], function(selector, name) {
+        controller["$" + name] = $(selector);
+      }, controller);
+    }
+  }
+
+  function registerEvents(controller, action) {
+    if (controller.events[action]) {
+      each(controller.events[action], function(eventMap, element) {
+        var evnt = first(keys(eventMap));
+        var handler = controller[first(values(eventMap))];
+        var $element = controller["$" + element];
+        $element.on(evnt, handler);
+      }, controller);
+    }
+  }
+
+  function registerElementEvents(controller) {
+    each(controller.elements, function(elements, action) {
+      controller.dispatcher.before(actionEventName(controller, action), function() {
+        cacheElements(controller, action);
+      }, controller);
+    }, controller);
+  }
+
+  function registerControllerEvents(controller) {
+    each(controller.events, function(eventMap, action) {
+      controller.dispatcher.on(actionEventName(controller, action), function() {
+        registerEvents(controller, action);
+      }, controller);
+    }, controller);
+  }
+
+  return {
+    create: function(attrs) {
+      attrs = attrs || {};
+      if (!attrs.name) throw new Error("Controller.create(name): name is undefined");
+
+      var controller = defaults(attrs, {
+        actions: [],
+        channel: "controller",
+        controllerEventName: underscore(attrs.name),
+        dispatcher: JSKit.Dispatcher.create(),
+        elements: {},
+        events: {},
+        eventSeparator: ":",
+        all: function() {},
+        initialize: function() {}
+      });
+      bindAll(controller);
+      controller.actions.unshift("all");
+      registerElementEvents(controller);
+      registerControllerEvents(controller);
+      registerActions(controller);
+
+      controller.initialize();
+
+      return controller;
+    }
+  };
 })();
 
 JSKit.Application = (function() {
-  var clone = _.clone;
-  var assign = _.assign;
-  var first = _.first;
+  var extend = _.extend;
   var map = _.map;
-
-  function Application() {
-    this.Controllers = {};
-    this.Dispatcher = new JSKit.Dispatcher;
-  }
-
-  Application.prototype.createController = function(name, attrs) {
-    var dispatcher = attrs.dispatcher || this.Dispatcher;
-    if (attrs.dispatcher) delete attrs.dispatcher;
-
-    name = constantize(name);
-    assign(attrs, { name: name });
-
-    function Controller() { JSKit.Controller.apply(this, arguments); }
-    assign(Controller.prototype, JSKit.Controller.prototype, attrs);
-    this[attrs.name + "Controller"] = Controller;
-    this.Controllers[name] = new Controller(dispatcher, attrs);
-
-    return this.Controllers[name];
-  };
-
-  return Application;
 
   function constantize(string) {
     string = string || "";
@@ -284,8 +199,28 @@ JSKit.Application = (function() {
     return string.charAt(0).toUpperCase() + string.slice(1);
   }
 
-})();
+  return {
+    create: function() {
+      var dispatcher = JSKit.Dispatcher.create();
+      return {
+        Controllers: {},
+        Dispatcher: dispatcher,
 
-JSKit.createApplication = function() {
-  return new JSKit.Application;
-};
+        createController: function(name, attrs) {
+          attrs = attrs || {};
+          if (!name) throw new Error("Application.createController(name, attrs): name is undefined");
+          attrs.name = name;
+
+          var factory = {
+            create: function(attributes) {
+              attributes = attributes || { name: name };
+              return JSKit.Controller.create(extend({}, attrs, attributes));
+            }
+          }
+          this[constantize(name) + "Controller"] = factory;
+          return this.Controllers[name] = factory.create({ dispatcher: dispatcher });
+        }
+      };
+    }
+  };
+})();
