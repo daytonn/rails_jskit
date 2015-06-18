@@ -51,7 +51,7 @@ ApplicationController.class_eval do
     ].compact.join(":")
 
     [
-      JskitRails.configuration.app_namespace,
+      RailsJskit.configuration.app_namespace,
       "Dispatcher",
       %Q(trigger("#{event}"#{payload});)
     ].join(".")

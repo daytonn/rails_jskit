@@ -1,4 +1,4 @@
-//= require jskit_rails
+//= require rails_jskit
 
 App.createController("Pages", {
   actions: ['index'],

@@ -1,4 +1,4 @@
-module JskitRails
+module RailsJskit
   class Configuration
     attr_accessor :app_namespace
 

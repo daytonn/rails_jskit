@@ -1,4 +1,3 @@
 Rails.application.routes.draw do
-
-  mount JskitRails::Engine => "/jskit_rails"
+  mount RailsJskit::Engine => "/rails_jskit"
 end

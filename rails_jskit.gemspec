@@ -1,17 +1,17 @@
 $LOAD_PATH.push File.expand_path("../lib", __FILE__)
 
 # Maintain your gem's version:
-require "jskit_rails/version"
+require "rails_jskit/version"
 
 # Describe your gem and declare its dependencies:
 Gem::Specification.new do |s|
-  s.name        = "jskit_rails"
-  s.version     = JskitRails::VERSION
+  s.name        = "rails_jskit"
+  s.version     = RailsJskit::VERSION
   s.authors     = ["Dayton Nolan"]
   s.email       = ["daytonn@gmail.com"]
-  s.homepage    = "https://github.com/daytonn/jskit_rails"
+  s.homepage    = "https://github.com/daytonn/rails_jskit"
   s.summary     = "Gem that provides Rails integration for jskit"
-  s.description = "jsit_rails provides jskit.js to the asset pipeline and allows seamless event dispatching from your rails application to jskit."
+  s.description = "rails_jskit provides jskit.js to the asset pipeline and allows seamless event dispatching from your rails application to jskit."
   s.license     = "Apache 2.0"
 
   s.files = Dir["{lib,app}/**/*"] + ["LICENSE", "README.md"]

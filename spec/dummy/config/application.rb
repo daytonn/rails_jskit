@@ -9,7 +9,7 @@ require "sprockets/railtie"
 # require "rails/test_unit/railtie"
 
 Bundler.require(*Rails.groups)
-require "jskit_rails"
+require "rails_jskit"
 
 module Dummy
   class Application < Rails::Application

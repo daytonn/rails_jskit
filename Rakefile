@@ -46,7 +46,7 @@ namespace :version do
 
   namespace :bump do
 
-    major, minor, patch = JskitRails::VERSION.split(".").map(&:to_i)
+    major, minor, patch = RailsJskit::VERSION.split(".").map(&:to_i)
 
     desc "Bump major version"
     task :major do
@@ -95,9 +95,7 @@ namespace :jskit do
     puts "JSKit #{jskit_package_json['version']} installed from npm."
 
     puts "Copying JSKit to #{js_dir}..."
-    Dir["#{npm_jskit_dir}/*.js"].each do |file|
-      FileUtils.cp_r(file, js_dir)
-    end
+    FileUtils.cp_r("#{npm_jskit_dir}/jskit.js", js_dir)
   end
 end
 

@@ -1,33 +1,36 @@
-jskit_rails
+rails_jskit
 ===========
 
-[![Gem Version](https://badge.fury.io/rb/jskit_rails.svg)](http://badge.fury.io/rb/jskit_rails)
+[![Gem Version](https://badge.fury.io/rb/rails_jskit.svg)](http://badge.fury.io/rb/rails_jskit)
 
-jskit_rails is a gem that let's you seamlessly integrate rails with [JSKit](https://github.com/daytonn/jskit). View the example repo [here](https://github.com/daytonn/jskit_rails-example) or see it in action [here](https://jskit-rails-example.herokuapp.com/)
+rails_jskit is a gem that let's you seamlessly integrate rails with [JSKit](https://github.com/daytonn/jskit). View the example repo [here](https://github.com/daytonn/rails_jskit-example) or see it in action [here](https://jskit-rails-example.herokuapp.com/)
 
 
-### Requirements
+### Dependencies
 * [lodash](https://lodash.com/) or [underscore](http://underscorejs.org/)
+* [jquery](https://jquery.com/) or equivalent
 
-Make sure that lodash or underscore is required in your `application.js` file.
+Make sure that the dependencies is required in your `application.js` file.
 
 ```js
 //= require lodash
+//= require jquery
 ```
 
 -- or --
 
 ```js
 //= require underscore
+//= require zepto
 ```
 
 Installation
 ------------
 
-Add `jskit_rails` to your Gemfile:
+Add `rails_jskit` to your Gemfile:
 
 ```rb
-gem "jskit_rails"
+gem "rails_jskit"
 ```
 
 Bundle it up:
@@ -48,7 +51,7 @@ Add the `jskit` helper to your layout (i.e. `app/views/layouts/application.html.
 Add the jskit javascript (i.e. `app/assets/javascripts/application.js`):
 
 ```js
-//= require jskit_rails
+//= require rails_jskit
 ```
 
 That's it, now all controller actions will be triggered on the `JSKit` dispatcher.
@@ -69,7 +72,7 @@ Now simply require that entire directory in your `application.js` file:
 
 #### Events
 
-There are three events triggered on every page rendered: an application controller global event, a controller global event and a controller action event. Given a `Posts` controller, when rendering the `index` action, you will notice the three events triggered where the `<%= jskit %>` snippet was placed:
+There are three events triggered on every page rendered: a global event, a controller event and an action event. Given a `Posts` controller, when rendering the `index` action, you will notice the three events triggered where the `<%= jskit %>` snippet was placed:
 
 ```js
 App.Dispatcher.trigger("controller:application:all");
@@ -91,7 +94,7 @@ App.createController("Application", {
 });
 ```
 
-The `all` method is automatically wired to the `controller:application:all` event, which is automatically triggered on each page via the `<%= jskit %>` snippet. You now have a simple, testable controller to define behavior in your application.
+The `all` method is automatically wired to the `controller:application:all` event, which is triggered on each page via the `<%= jskit %>` snippet. You now have a simple, testable controller to define behavior in your application.
 
 All other controllers are defined in the same way, the only difference is that your other controllers will have actions defined. Assuming you have a `Posts` controller in ruby, whose index action needs a bit of JavaScript to spice up the template. You would simply create a corresponding `Posts` controller in `app/assets/javascripts/posts_controller.js`:
 

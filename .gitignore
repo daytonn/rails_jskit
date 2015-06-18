@@ -8,6 +8,6 @@ spec/dummy/tmp/
 spec/dummy/.sass-cache
 bin
 **/*.DS_Store
-jskit_rails-1.2.0.gem
+rails_jskit-*.gem
 node_modules/
 *.gem
