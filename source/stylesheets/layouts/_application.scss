@@ -1,0 +1,71 @@
+body {
+  background: white;
+}
+
+.centered {
+  @include outer-container;
+}
+
+#header {
+  @include row;
+  @extend %navigation-header;
+}
+
+#content {
+  @include row;
+
+  h1 {
+    color: $blue2;
+  }
+}
+
+#footer {
+  @include row;
+  background: $blue3;
+  min-height: em(50);
+  position: absolute;
+  bottom: 0;
+  left: 0;
+  right: 0;
+}
+
+.github-buttons {
+  @include span-columns(6);
+  @include shift(3);
+  @include omega;
+  text-align: center;
+  margin-bottom: 5em;
+  margin-top: 5em;
+
+  a {
+    margin: 0 1em;
+    display: inline-block;
+  }
+
+  .issues {
+    @include button-color($error);
+  }
+}
+
+.features {
+  @include fill-parent;
+  clear: both;
+
+  h2 {
+    border-bottom: solid 1px $blue5;
+    padding-bottom: .5em;
+  }
+
+  .why-jskit {
+    @include span-columns(4);
+  }
+
+  .lightweight {
+    @include span-columns(4);
+  }
+
+  .decoupled {
+    @include span-columns(4);
+    @include omega;
+  }
+}
