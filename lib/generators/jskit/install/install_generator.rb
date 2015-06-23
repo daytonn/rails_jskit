@@ -25,22 +25,6 @@ module Jskit
 
       private
 
-      def add_lodash
-        return if lodash?
-        if jquery?
-          insert_into_file(js_manifest, "//= require lodash\n", before: "//= require jquery\n")
-        elsif require_tree?
-          insert_into_file(js_manifest, "//= require lodash\n", before: "//= require_tree .\n")
-        else
-          append_to_file(js_manifest, "//= require lodash\n")
-        end
-      end
-
-      def add_jquery
-        return if jquery?
-        insert_into_file(js_manifest, "//= require jquery\n", after: "//= require lodash")
-      end
-
       def add_rails_jskit
         return if rails_jskit?
         if require_tree?
@@ -93,28 +77,21 @@ module Jskit
         "app/assets/javascripts/application.js"
       end
 
-      def manifest?
-        File.exists? js_manifest
+      def add_js_to_manifest
+        if File.exists? js_manifest
+          if has_jquery?
+            insert_into_file js_manifest, "//= require lodash\n", before: "//= require jquery\n" unless has_lodash?
+          else
+            append_to_file js_manifest, "//= require lodash\n//= require jquery\n"
+          end
+          append_to_file js_manifest, "//= require rails_jskit\n//= require_tree ./controllers\n"
+        end
       end
 
-      def require_tree?
-        !!application_js.match(/\/\/= require_tree \./)
-      end
-
-      def lodash?
-        !!application_js.match(/\/\/= require lodash\b/)
-      end
-
-      def jquery?
-        !!application_js.match(/\/\/= require jquery\b/)
-      end
-
-      def rails_jskit?
-        !!application_js.match(/\/\/= require rails_jskit/)
-      end
+      private
 
       def application_js
-        File.read js_manifest
+        @application_js ||= File.read js_manifest
       end
     end
   end
