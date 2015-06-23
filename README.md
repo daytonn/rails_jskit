@@ -3,7 +3,7 @@ rails_jskit
 
 [![Gem Version](https://badge.fury.io/rb/rails_jskit.svg)](http://badge.fury.io/rb/rails_jskit)
 
-rails_jskit is a gem that let's you seamlessly integrate rails with [JSKit](https://github.com/daytonn/jskit). View the example repo [here](https://github.com/daytonn/rails_jskit-example) or see it in action [here](https://jskit-rails-example.herokuapp.com/)
+rails_jskit is a gem that let's you seamlessly integrate rails with [JSkit](https://github.com/daytonn/jskit). View the example repo [here](https://github.com/daytonn/rails_jskit-example) or see it in action [here](https://jskit-rails-example.herokuapp.com/)
 
 
 ### Dependencies
@@ -54,11 +54,11 @@ Add the jskit javascript (i.e. `app/assets/javascripts/application.js`):
 //= require rails_jskit
 ```
 
-That's it, now all controller actions will be triggered on the `JSKit` dispatcher.
+That's it, now all controller actions will be triggered on the `JSkit` dispatcher.
 
 ### Controllers
 
-JSKit offers controllers as a basic building block for JavaScript functionality. Making a folder inside `app/assets/javascripts` named `controllers` is a great place to put these:
+JSkit offers controllers as a basic building block for JavaScript functionality. Making a folder inside `app/assets/javascripts` named `controllers` is a great place to put these:
 
 ```sh
 mkdir app/assets/javascripts/controllers
@@ -80,11 +80,11 @@ App.Dispatcher.trigger("controller:pages:all");
 App.Dispatcher.trigger("controller:pages:index");
 ```
 
-This allows you to integrate your JavaScript at key points in your rails application with minimal coupling. An event triggered with no corresponding `JSKit` controller or action defined has no effect. 
+This allows you to integrate your JavaScript at key points in your rails application with minimal coupling. An event triggered with no corresponding `JSkit` controller or action defined has no effect. 
 
 #### Application Controller
 
-It's common to have some JavaScript that runs on every page of your application. In the past, you may have slapped random bits of code inside a jQuery `$(document).ready` block but not with JSKit. JSKit makes an explicit yet minimally coupled connection between your Rails app and your client-side code. To define application-wide behavior, define an application controller in `app/assets/controller/application_controller.js`:
+It's common to have some JavaScript that runs on every page of your application. In the past, you may have slapped random bits of code inside a jQuery `$(document).ready` block but not with JSkit. JSkit makes an explicit yet minimally coupled connection between your Rails app and your client-side code. To define application-wide behavior, define an application controller in `app/assets/controller/application_controller.js`:
 
 ```js
 App.createController("Application", {
@@ -108,7 +108,7 @@ App.createController("Posts", {
 });
 ```
 
-Here you can see that the `actions` array tells JSKit to wire up the `index` method to the `controller:posts:index` event. This event is automatically fired by the `<%= jskit %>` snippet.
+Here you can see that the `actions` array tells JSkit to wire up the `index` method to the `controller:posts:index` event. This event is automatically fired by the `<%= jskit %>` snippet.
 
 #### Mapped Events
 
@@ -212,4 +212,4 @@ class PostsController < ApplicationController
 end
 ```
 
-This should be everything you need to design and test basic client-side interactions with JSKit. If you'd like to see a working example check out [this repo](https://github.com/daytonn/jskit_rails-example).
+This should be everything you need to design and test basic client-side interactions with JSkit. If you'd like to see a working example check out [this repo](https://github.com/daytonn/jskit_rails-example).

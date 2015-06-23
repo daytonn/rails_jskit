@@ -88,13 +88,13 @@ namespace :jskit do
         puts "Removed #{file}." if FileUtils.rm(full_path)
       end
     end
-    puts "JSKit files removed."
+    puts "JSkit files removed."
 
-    puts "Installing JSKit from npm.."
+    puts "Installing JSkit from npm.."
     puts %x{npm update jskit}
-    puts "JSKit #{jskit_package_json['version']} installed from npm."
+    puts "JSkit #{jskit_package_json['version']} installed from npm."
 
-    puts "Copying JSKit to #{js_dir}..."
+    puts "Copying JSkit to #{js_dir}..."
     FileUtils.cp_r("#{npm_jskit_dir}/jskit.js", js_dir)
   end
 end
