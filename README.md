@@ -1,4 +1,4 @@
-![RailsJskit](https://raw.githubusercontent.com/daytonn/rails_jskit/master/jskit-logo.png "rails_jskit")
+![RailsJskit](https://raw.githubusercontent.com/daytonn/rails_jskit/master/logo.png "rails_jskit")
 ===========
 
 [![Gem Version](https://badge.fury.io/rb/rails_jskit.svg)](http://badge.fury.io/rb/rails_jskit)
