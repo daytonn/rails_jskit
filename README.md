@@ -5,6 +5,7 @@ rails_jskit
 
 rails_jskit is a gem that let's you seamlessly integrate rails with [JSkit](https://github.com/daytonn/jskit). View the example repo [here](https://github.com/daytonn/rails_jskit-example) or see it in action [here](https://jskit-rails-example.herokuapp.com/)
 
+[totes legit docs](http://daytonn.github.io/rails_jskit/)
 
 ### Dependencies
 * [lodash](https://lodash.com/) or [underscore](http://underscorejs.org/)
