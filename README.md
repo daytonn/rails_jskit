@@ -18,9 +18,9 @@ rails_jskit is a gem that let's you seamlessly integrate rails with [JSkit](http
   - [Controllers](#controllers)
     * [Actions](#actions)
     * [Mapped Actions](#mapped-actions)
-    * [The `all` Action](#all-action)
-    * [Creating an Application Controller](#application-controller)
-    * [Passing Data To Actions](#passing-data)
+    * [The `all` Action](#the-all-action)
+    * [Creating an Application Controller](#creating-an-application-controller)
+    * [Passing Data To Actions](#passing-data-to-actions)
     * [Elements](#elements)
     * [Events](#events)
 
