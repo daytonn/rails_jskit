@@ -54,7 +54,12 @@ module Jskit
       end
 
       def body_indentation
-        "#{layout_file_content.match(/^(\s+)%body/)[1]}  "
+        if layout_file_content.match(/^(\s+)%body/)
+          indentation = layout_file_content.match(/^(\s+)%body/)[1]
+        else
+          indentation = ""
+        end
+        "#{indentation}  "
       end
 
       def layout_file
@@ -77,10 +82,20 @@ module Jskit
         "app/assets/javascripts/application.js"
       end
 
-      private
+      def manifest?
+        File.exists? js_manifest
+      end
+
+      def require_tree?
+        !!application_js.match(/\/\/= require_tree \./)
+      end
+
+      def rails_jskit?
+        !!application_js.match(/\/\/= require rails_jskit/)
+      end
 
       def application_js
-        @application_js ||= File.read js_manifest
+        File.read js_manifest
       end
     end
   end
