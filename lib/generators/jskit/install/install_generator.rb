@@ -77,17 +77,6 @@ module Jskit
         "app/assets/javascripts/application.js"
       end
 
-      def add_js_to_manifest
-        if File.exists? js_manifest
-          if has_jquery?
-            insert_into_file js_manifest, "//= require lodash\n", before: "//= require jquery\n" unless has_lodash?
-          else
-            append_to_file js_manifest, "//= require lodash\n//= require jquery\n"
-          end
-          append_to_file js_manifest, "//= require rails_jskit\n//= require_tree ./controllers\n"
-        end
-      end
-
       private
 
       def application_js
