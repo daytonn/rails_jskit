@@ -3,7 +3,7 @@
 
 [![Gem Version](https://badge.fury.io/rb/rails_jskit.svg)](http://badge.fury.io/rb/rails_jskit)
 
-rails_jskit is a gem that let's you seamlessly integrate rails with [JSkit](https://github.com/daytonn/jskit). View the example repo [here](https://github.com/daytonn/rails_jskit-example) or see it in action [here](https://jskit-rails-example.herokuapp.com/)
+rails_jskit is a gem that let's you seamlessly integrate rails with [JSkit](https://github.com/daytonn/jskit). View the example repo [here](https://github.com/daytonn/rails_jskit-example).
 
 * [Online Documentation](http://daytonn.github.io/rails_jskit/documentation.html)
 * [Dependencies](#dependencies)
