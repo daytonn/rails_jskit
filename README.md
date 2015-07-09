@@ -107,7 +107,7 @@ Documentation
 
 ### Application Object
 
-RailsJskit will automatically create a JSkit application object for you, using the configured `app_namespace` for the global variable name _(defaults to "App")_. This global namespace provides you a way to interact with your JSkit application. You can #{link_to "configure", "#configuration"} this setting in your initializer `(config/initializers/rails_jskit.rb)`.
+RailsJskit will automatically create a JSkit application object for you, using the configured `app_namespace` for the global variable name _(defaults to "App")_. This global namespace provides you a way to interact with your JSkit application. You can [configure](#configuration) this setting in your initializer `(config/initializers/rails_jskit.rb)`.
 
 #### Dispatcher
 
@@ -472,7 +472,7 @@ Testing
 
 One of the main advantages of RailsJSkit is that it provides a simple structure that's easily tested. There are however, a few things you need to keep in mind while testing JSkit controllers.
 
-When testing, it's important to use the #{link_to "Controller Factories", "#controller-factories"} to create your test subjects. This ensures that you always have a fresh version of the controller that has not been mutated by previous tests. A basic jasmine/mocha style JSkit controller test looks something like this:
+When testing, it's important to use the [Controller Factories](#controller-factories) to create your test subjects. This ensures that you always have a fresh version of the controller that has not been mutated by previous tests. A basic jasmine/mocha style JSkit controller test looks something like this:
 
 ```js
 // spec/javscripts/controllers/posts_controller_spec.js
