@@ -450,7 +450,7 @@ App.createController("Posts", {
 
 ##### Registering Events Through Functions
 
-If you need full control over the event registration, you can pass a function to register events instead of the event->method map. This function provides an `on` function as its only parameter that gives you the full power of jQuery's `on`:
+If you need full control over the event registration, you can pass a function to register events instead of the original event->method map. This function provides an `on` function as its only parameter that gives you the full power of jQuery's `on`:
 
 ```js
 // app/assets/javscripts/controllers/posts_controller.js
