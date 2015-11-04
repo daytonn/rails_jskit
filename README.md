@@ -448,6 +448,27 @@ App.createController("Posts", {
 });
 ```
 
+##### Registering Events Through Functions
+
+If you need full control over the event registration, you can pass a function to register events instead of the event->method map. This function provides an `on` function as its only parameter that gives you the full power of jQuery's `on`:
+
+```js
+// app/assets/javscripts/controllers/posts_controller.js
+App.createController("Posts", {
+  elements: {
+    new: {
+      postContainer: ["#post_container", function(on) {
+        on("hover", "button#post_submit", this.crazyVisualEffect);
+      }]
+    }
+  },
+
+  crazyVisualEffect: function(evnt) {
+    // handle hover over container
+  }
+});
+```
+
 Configuration
 -------------
 
