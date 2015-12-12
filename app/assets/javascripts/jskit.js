@@ -6,7 +6,6 @@
 */
 var JSkit = (function() {
   if (!_) throw new Error("JSkit: lodash or underscore is required");
-  if (!$) throw new Error("JSkit: jQuery or equivalent is required");
 
   return {
     /**
@@ -27,8 +26,8 @@ var JSkit = (function() {
  * @class Dispatcher
 */
 JSkit.Dispatcher = (function() {
-  var contains = _.contains;
-  var pluck = _.pluck;
+  var any = _.any;
+  var each = _.each;
 
   /**
     Get all handler functions for a given dispatcher and event.
@@ -69,7 +68,7 @@ JSkit.Dispatcher = (function() {
   */
   function registerHandler(registeredHandlers, eventHandler, method) {
     method = method || "push";
-    if (!contains(pluck(registeredHandlers, "handler"), eventHandler.handler)) {
+    if (!any(registeredHandlers, eventHandler)) {
       registeredHandlers[method](eventHandler);
     }
   }
@@ -146,7 +145,7 @@ JSkit.Dispatcher = (function() {
           var eventHhandlers = this.__events__[eventName] || [];
           var args = _.rest(arguments);
 
-          _.each(eventHhandlers, function(eventHandler) {
+          each(eventHhandlers, function(eventHandler) {
             var handler = eventHandler.handler;
             var context = eventHandler.context;
             handler.apply(context, args);
@@ -158,106 +157,37 @@ JSkit.Dispatcher = (function() {
 })();
 
 /**
- * @module JSkit
- * @class Controller
+  @module JSkit
+  @class Controller
 */
 JSkit.Controller = (function() {
+  var bind = _.bind;
   var bindAll = _.bindAll;
+  var cloneDeep = _.cloneDeep;
   var compact = _.compact;
   var defaults = _.defaults;
   var each = _.each;
+  var extend = _.extend;
   var first = _.first;
   var flatten = _.flatten;
-  var functions = _.functions;
-  var isFunc = _.isFunction;
+  var includes = _.includes;
+  var isArray = _.isArray;
+  var isFunction = _.isFunction;
   var isObject = _.isObject;
   var keys = _.keys;
   var last = _.last;
   var map = _.map;
-  var pairs = _.pairs;
   var reduce = _.reduce;
-  var uniq = _.uniq;
-  var values = _.values;
+  var underscore = _.snakeCase;
 
   /**
-   * Take a string and put underscores between names and delimiters
-   *
-   * @private
-   * @method constantize
-   * @param {String} string
-   * @return {String}
-  */
-  function underscore(string) {
-    string = string || "";
-    return string.replace(/([A-Z])/g, " $1").replace(/^\s?/, "").replace(/-|\s/g, "_").toLowerCase();
-  }
+    Get the full event name for a given controller and action.
 
-  /**
-   * Register the controller's actions to the dispatcher
-   *
-   * @private
-   * @method registerActions
-   * @param {Controller} controller
-  */
-  function registerActions(controller) {
-    each(controller.actions, function(action) {
-      each(mapAction(action), function(actionMap) {
-        ensureActionIsDefined(controller, actionMap);
-        controller.dispatcher.on(actionEventName(controller, actionMap.name), controller[actionMap.method], controller);
-      }, controller);
-    }, controller);
-  }
-
-  /**
-   * Take an action string or mapped action and return
-   * an object containing the action name and method.
-   *
-   * @private
-   * @method mapAction
-   * @param {String,Object} action/mappedAction
-   * @return {Array} action/event maps
-  */
-  function mapAction(action) {
-    return isObject(action) ? map(action, createActionMap) : [createActionMap(action, action)];
-  }
-
-  /**
-   * Create a list of maps of action name/method pairs.
-   *
-   * @private
-   * @method createActionMap
-   * @param {String} method to map to action
-   * @param {String} action to map to method
-  */
-  function createActionMap(method, action) {
-    return { name: action, method: method };
-  }
-
-  /**
-   * Take a controller and an actionMap and determine if
-   * the action is defined on the controller. If not, throw
-   * an error.
-   *
-   * @private
-   * @method ensureActionIsDefined
-   * @param {Controller} controller
-   * @param {Object} actionMap
-  */
-  function ensureActionIsDefined(controller, actionMap) {
-    if (!isFunc(controller[actionMap.method])) {
-      throw new Error(controller.name + ' action "' + actionMap.name + ":" + actionMap.method + '" method is undefined');
-    }
-  }
-
-  /**
-   * Return an event name based on the controller properties
-   * that make up an event name.
-   *
-   * @private
-   * @method actionEventName
-   * @param {Controller} controller
-   * @param {String} action
-   * @return String
+    @private
+    @method actionEventName
+    @param controller {Object} object to check for the given action
+    @param action {String} name to look up on given controller
+    @return {String} Full event name for a given controller's action
   */
   function actionEventName(controller, action) {
     return compact([
@@ -269,188 +199,266 @@ JSkit.Controller = (function() {
   }
 
   /**
-   * Iterate over the given controller's elements object
-   * and cache a reference to each selected element.
-   *
-   * @private
-   * @method cacheElements
-   * @param {Controller} controller
-   * @param {String} action
+    Normalize object and string actions into an array of tuples.
+
+    @private
+    @method normalizeActions
+    @param controller {Object} whose actions you wish to normalize
   */
-  function cacheElements(controller, action) {
-    if (reduceElements(controller.elements, first)[action]) {
-      each(reduceElements(controller.elements, first)[action], function(selector, name) {
-        controller["$" + name] = $(selector);
-      }, controller);
+  function normalizeActions(controller) {
+    controller.__actions__ = flatten(map(controller.actions, function(action) {
+      return normalizeAction(action);
+    }));
+  }
+
+  /**
+    Normalize the given action into an action object.
+
+    @private
+    @method normalizeAction
+    @param action {String} you wish to normalize
+    @return {Array} array of normalized action objects
+  */
+  function normalizeAction(action) {
+    return isObject(action) ? map(action, createActionObject) : [createActionObject(action, action)];
+  }
+
+  /**
+    Create an action object from the given method and action.
+
+    @private
+    @method createActionObject
+    @param method {String} associated with the given action
+    @param name {String} of the given action
+    @return {Object} object with the name and method of the given action
+  */
+  function createActionObject(method, name) {
+    return { name: name, method: method };
+  }
+
+  /**
+    Throw an error if the action method is not defined on the given controller.
+
+    @private
+    @method ensureActionIsDefined
+    @param controller {Object} to ensure has the given action method
+    @param {Srtring}
+  */
+  function ensureActionIsDefined(controller, action) {
+    if (!isFunction(controller[action.method])) {
+      throw new Error(controller.name + ' action "' + action.name + ":" + action.method + '" method is undefined');
     }
   }
 
   /**
-   * Iterate over the given action's events and register
-   * the event handlers on each element.
-   *
-   * @private
-   * @method registerEvents
-   * @param {Controller} controller
-   * @param {String} action
+    Register all the action for a given controller.
+
+    @private
+    @method registerActions
+    @param controller {Object} to register actions on
   */
-  function registerEvents(controller, action) {
-    if (reduceElements(controller.elements, last)[action]) {
-      each(reduceElements(controller.elements, last)[action], function(eventMap, element) {
-        each(eventMap, function(method, evnt) {
-          var handler = controller[method];
-          var $element = controller["$" + element];
-          $element.on(evnt, handler);
-        }, controller);
-      }, controller);
-    }
+  function registerActions(controller) {
+    each(controller.__actions__, function(action) {
+      ensureActionIsDefined(controller, action);
+      controller.dispatcher.on(actionEventName(controller, action.name), controller[action.method], controller);
+    });
   }
 
   /**
-   * Iterate over the controller's elements
-   * and register to cache each action's events.
-   *
-   * @private
-   * @method registerElementCaching
-   * @param {Controller} controller
-  */
-  function registerElementCaching(controller) {
-    each(reduceElements(controller.elements, first), function(elements, action) {
-      controller.dispatcher.before(actionEventName(controller, action), function() {
-        cacheElements(controller, action);
-      }, controller);
-    }, controller);
-  }
+    Normalize the element objects for a given controller.
 
-  /**
-   * Iterate over the controller's events
-   * and register to handle each action's element events.
-   *
-   * @private
-   * @method registerControllerEvents
-   * @param {Controller} controller
+    @private
+    @method normalizeControllerElements
+    @param controller {Object} to normalize elements of
   */
-  function registerControllerEvents(controller) {
-    each(reduceElements(controller.elements, last), function(eventMap, action) {
-      controller.dispatcher.on(actionEventName(controller, action), function() {
-        registerEvents(controller, action);
-      }, controller);
-    }, controller);
-  }
-
-  /**
-   * Reduce the controller's elements object into an object
-   * that only contains either the elements to cache or the
-   * events to register to that element.
-   *
-   * @private
-   *
-   * @method reduceElements
-   * @param {Object} controller's elements object
-   * @param {Function} function to grab either head or tail (first, last)
-   * @return {Object}
-  */
-  function reduceElements(elements, accessMethod) {
-    return reduce(elements, function(memo, value, key) {
-      memo[key] = {};
-      each(value, function(v, k) {
-        memo[key][k] = accessMethod(flatten([v]));
-      });
+  function normalizeControllerElements(controller) {
+    controller.__elements__ = reduce(controller.elements, function(memo, elements, action) {
+      memo[action] = normalizeElements(elements);
       return memo;
     }, {});
   }
 
-  return {
-    /**
-     * Factory function to create fresh controller objects
-     * with the given attributes.
-     *
-     * @method create
-     * @static
-     * @param {Object} [attrs={}]
-     *
-     * @return {Controller}
-    */
-    create: function(attrs) {
-      attrs = attrs || {};
-      if (!attrs.name) throw new Error("Controller.create(name): name is undefined");
+  /**
+    Normalize the given elements to a common format.
 
-      var controller = defaults(attrs, {
-        /**
-         * Array of actions to be wired up.
-         *
-         * @property actions
-         * @type Array
-         * @default []
-        */
-        actions: [],
-        /**
-         * Namespace that controller events are namespaced under.
-         *
-         * @property namespace
-         * @type String
-         * @default ""
-        */
-        namespace: "",
-        /**
-         * Channel that controller events use under namespace.
-         *
-         * @property channel
-         * @type String
-         * @default "controller"
-        */
-        channel: "controller",
-        /**
-         * Underscored name of controller for use in events.
-         *
-         * @property controllerEventName
-         * @type String
-         * @default "controller"
-        */
-        controllerEventName: underscore(attrs.name),
-        /**
-         * Event dispatcher for registering events.
-         *
-         * @property dispatcher
-         * @type Dispatcher
-         * @default JSkit.Dispatcher.create()
-        */
-        dispatcher: JSkit.Dispatcher.create(),
-        /**
-         * Object of element names/selectors to
-         * cache per action.
-         *
-         * @property elements
-         * @type Object
-         * @default {}
-        */
-        elements: {},
-        /**
-         * Object of events for each action to
-         * register on given elements.
-         *
-         * @property events
-         * @type Object
-         * @default {}
-        */
-        eventSeparator: ":",
-        /**
-         * Default implementation that commits no operation
-         * @method all
-        */
-        all: function() {},
-        /**
-         * Default implementation that commits no operation
-         * @method initialize
-        */
-        initialize: function() {}
+    @private
+    @method normalizeElements
+    @param elements {Object} object to normalize
+    @return {Object} normalized elements object
+  */
+  function normalizeElements(elements) {
+    return reduce(elements, function(memo, selector, name) {
+      if (_.isArray(selector)) selector = first(selector);
+      memo[name] = selector;
+      return memo;
+    }, {});
+  }
+
+  /**
+    Normalize the event for a given controller.
+
+    @private
+    @method normalizeControllerEvents
+    @param controller controller {Object} with which to register events
+  */
+  function normalizeControllerEvents(controller) {
+    controller.__events__ = reduce(controller.elements, function(memo, elements, action) {
+      memo[action] = normalizeEvents(elements);
+      return memo;
+    }, {});
+  }
+
+
+  /**
+    Normalize the given events into a common format.
+
+    @private
+    @method normalizeEvents
+    @param elements {Object} object of events to normalize
+  */
+  function normalizeEvents(elements) {
+    return reduce(elements, function(memo, selector, name) {
+      if (_.isArray(selector)) memo["$" + name] = last(selector);
+
+      return memo;
+    }, {});
+  }
+
+  /**
+    Automatically register the all action.
+
+    @private
+    @method registerAllAction
+    @param controller {Controller}
+  */
+  function registerAllAction(controller) {
+    if (!includes(controller.actions, "all")) controller.actions.unshift("all");
+  }
+
+  /**
+    Convenience method to determine whether a given action is
+    a mapped action
+
+    @private
+    @method isMappedAction
+    @param action {Object}
+  */
+  function isMappedAction(action) {
+    return action.name != action.method;
+  }
+
+  function nativeFind(selector) {
+    return document.querySelectorAll(selector);
+  }
+
+  /**
+    Use jQuery or querySelector all to find a DOM element.
+
+    @private
+    @method findInDOM
+    @param selector {String}
+  */
+  function findInDOM(selector) {
+    var finder = $ ? $ : nativeFind;
+    return finder(selector);
+  }
+
+  function cacheElements(controller, action) {
+    if (!action) throw new Error("JSkit.Controller.cacheElements: action is undefined");
+
+    var actionElements = controller.__elements__[action];
+    if (actionElements) {
+      each(actionElements, function(selector, name) {
+        var element = controller["$" + name] = findInDOM(selector);
+
+        if (!element.length) {
+          throw new Error("JSkit.Controller.cacheElements: " + selector + " is not in the DOM");
+        }
       });
-      bindAll(controller);
-      controller.actions.unshift("all");
+    }
+  }
 
-      registerElementCaching(controller);
-      registerControllerEvents(controller);
+  function decorateCacheElements(controller) {
+    controller.cacheElements = function(action) {
+      return cacheElements(controller, action);
+    };
+  }
+
+  function registerActionEvents(controller, action) {
+    each(controller.__events__[action], function(events, element) {
+      if (!controller[element]) cacheElements(controller, action);
+      registerElementEvents(controller, element, events);
+    });
+  }
+
+  function registerElementEvents(controller, element, events) {
+    var eventsBinder = bind(eventsBinderFor(events), controller);
+    var on = bind($.prototype.on, controller[element]);
+    eventsBinder(on);
+  }
+
+  function eventsBinderFor(events) {
+    if(events instanceof Function) {
+      return events;
+    }
+
+    return function(on) {
+      var controller = this;
+      each(events, function(handler, evnt) {
+        on(evnt, controller[handler]);
+      });
+    };
+  }
+
+  function decorateRegisterEvents(controller) {
+    controller.registerEvents = function(action) {
+      return registerActionEvents(controller, action);
+    };
+  }
+
+  function restrictKeywords(attrs) {
+    var keywords = [
+      "registerEvents",
+      "registerActions",
+      "cacheElements",
+      "actionEventName"
+    ];
+
+    each(keys(attrs), function(keyword) {
+      if (includes(keywords, keyword)) {
+        throw new Error("JSkit.Controller.create: " + keyword + " is a restricted keyword");
+      }
+    });
+  }
+
+  return {
+    create: function(attrs) {
+      attrs = extend({}, attrs);
+      if (!attrs.name) throw new Error("JSkit.Controller: name is undefined");
+      restrictKeywords(attrs);
+      var controller = defaults(attrs, {
+        actions: [],
+        channel: "controller",
+        controllerEventName: underscore(attrs.name),
+        dispatcher: JSkit.Dispatcher.create(),
+        elements: {},
+        eventSeparator: ":",
+        namespace: "",
+        initialize: function() {},
+        all: function() {},
+        actionEventName: function(action) {
+          return actionEventName(this, action);
+        }
+      });
+
+      bindAll(controller);
+      registerAllAction(controller);
+      normalizeActions(controller);
       registerActions(controller);
+      normalizeControllerElements(controller);
+      normalizeControllerEvents(controller);
+      decorateCacheElements(controller);
+      decorateRegisterEvents(controller);
 
       controller.initialize();
 
