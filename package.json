@@ -1,14 +1,13 @@
 {
   "name": "rails_jskit",
   "private": true,
-  "version": "3.5.0",
+  "version": "5.1.0",
   "description": "Gem that provides Rails integration for jskit",
   "main": "index.js",
   "dependencies": {
-    "jskit": "5.1.0-pre"
+    "jskit": "5.1.0"
   },
   "devDependencies": {
-
   },
   "scripts": {
     "test": "echo \"Error: no test specified\" && exit 1"
