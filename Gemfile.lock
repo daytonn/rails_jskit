@@ -1,7 +1,7 @@
 PATH
   remote: .
   specs:
-    rails_jskit (5.1.0)
+    rails_jskit (5.1.1)
       rails (~> 4.0)
 
 GEM
@@ -154,6 +154,3 @@ DEPENDENCIES
   rails_jskit!
   rspec-rails (~> 3.1)
   sqlite3 (~> 1.3)
-
-BUNDLED WITH
-   1.10.6
