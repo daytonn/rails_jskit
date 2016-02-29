@@ -12,12 +12,12 @@ Gem::Specification.new do |s|
   s.homepage    = "https://github.com/daytonn/rails_jskit"
   s.summary     = "Gem that provides Rails integration for jskit"
   s.description = "rails_jskit provides jskit.js to the asset pipeline and allows seamless event dispatching from your rails application to jskit."
-  s.license     = "Apache 2.0"
+  s.license     = "Apache-2.0"
 
   s.files = Dir["{lib,app}/**/*"] + ["LICENSE", "README.md"]
   s.test_files = Dir["spec/**/*_spec.rb"]
 
-  s.add_dependency "rails", "~> 4.0"
+  s.add_dependency "rails", "> 4.0"
 
   s.add_development_dependency "appraisal", "~> 0"
   s.add_development_dependency "sqlite3", "~> 1.3"
