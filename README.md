@@ -161,7 +161,7 @@ To define JavaScript for that controller, create a corresponding JSkit controlle
 ```js
 // app/assets/javascripts/controllers/posts_controller.js
 App.createController("Posts", {
-  actions: ["index"]
+  actions: ["index"],
 
   index: function() {
     // behavior for posts#index
