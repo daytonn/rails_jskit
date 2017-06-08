@@ -279,7 +279,7 @@ JSkit.Controller = (function() {
         var element = controller["$" + name] = findInDOM(selector);
 
         if (!element.length) {
-          throw new Error("JSkit.Controller.cacheElements: " + selector + " is not in the DOM");
+          console.log("JSkit.Controller.cacheElements: " + selector + " is not in the DOM");
         }
       });
     }
